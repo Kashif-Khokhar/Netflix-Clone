@@ -6,12 +6,14 @@ A state-of-the-art Netflix Clone built with **React 19**, **Vite**, and **Tailwi
 
 ## ✨ Features
 
-- **📺 Dynamic Banner**: Featured content with cinematic previews and metadata.
-- **🎞️ Content Rows**: Categorized movie reels including Trending, Originals, and Top Rated.
-- **🎬 Trailer Playback**: Interactive modal for watching movie trailers.
-- **🌓 Modern Aesthetics**: Premium dark mode with slate-emerald accents and glassmorphism.
-- **📱 Responsive Design**: Fully optimized for mobile, tablet, and desktop views.
-- **🛰️ Real-time Data**: Integrated with TMDB API for up-to-date movie information.
+- **📺 Differentiated Banners**: Each page (Movies, TV Shows, Trending) features unique, high-quality featured content.
+- **ℹ️ Movie Info Modal**: A premium, high-fidelity modal displaying detailed movie metadata, ratings, and descriptions.
+- **🎞️ Content Rows**: Categorized movie reels including Trending, Originals, and Top Rated with smooth hover effects.
+- **🎬 Trailer Playback**: Integrated YouTube player for instant movie previews.
+- **🌐 Browse by Languages**: Discover global cinema by filtering content by original language.
+- **➕ Personal Watchlist**: Save your favorite movies and shows to a persistent personal collection.
+- **🛡️ Robust Image Recovery**: Automatic "bulletproof" image resolving with high-quality fallbacks for missing or broken assets.
+- **📱 Responsive Design**: Fully optimized for a seamless experience on all devices.
 
 ## 🛠️ Tech Stack
 
@@ -56,10 +58,11 @@ A state-of-the-art Netflix Clone built with **React 19**, **Vite**, and **Tailwi
 
 ## 📂 Project Structure
 
-- `src/api/`: Axios configuration and TMDB requests.
-- `src/components/`: Reusable UI components (Banner, Nav, Row, TrailerModal).
-- `src/context/`: State management for trailers and UI settings.
-- `src/index.css`: Global styles and Tailwind 4 configuration.
+- `src/api/`: Axios configuration, TMDB requests, and custom sample data.
+- `src/components/`: Reusable UI components (Banner, Nav, Row, InfoModal, TrailerModal).
+- `src/pages/`: Page-level components (Home, Movies, TVShows, MyList, BrowseByLanguage).
+- `src/context/`: State management for Watchlist.
+- `src/index.css`: Global styles and Tailwind 4 theme configuration.
 
 ---
 

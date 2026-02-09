@@ -4,24 +4,25 @@ import requests from "../api/requests";
 import { Play, Info } from "lucide-react";
 import { sampleMovies } from "../api/sampleData";
 
-function Banner() {
+function Banner({ onInfoClick, fetchUrl = requests.fetchNetflixOriginals }) {
   const [movie, setMovie] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const request = await axios.get(requests.fetchNetflixOriginals);
-        setMovie(
-          request.data.results[
-            Math.floor(Math.random() * request.data.results.length - 1)
-          ]
-        );
+        const request = await axios.get(fetchUrl);
+        const results = request.data.results;
+        if (results && results.length > 0) {
+          setMovie(results[Math.floor(Math.random() * results.length)]);
+        } else {
+          throw new Error("Empty results");
+        }
       } catch {
         setMovie(sampleMovies[Math.floor(Math.random() * sampleMovies.length)]);
       }
     }
     fetchData();
-  }, []);
+  }, [fetchUrl]);
 
   function truncate(str, n) {
     return str?.length > n ? str.substr(0, n - 1) + "..." : str;
@@ -32,13 +33,13 @@ function Banner() {
       className="relative text-white object-contain min-h-[500px] h-[95vh] md:h-[100vh]"
       style={{
         backgroundSize: "cover",
-        backgroundImage: `url("${movie?.backdrop_path?.startsWith("http") ? movie?.backdrop_path : `https://image.tmdb.org/t/p/original/${movie?.backdrop_path}`}")`,
+        backgroundImage: `url("${movie?.backdrop_path ? (movie.backdrop_path.startsWith("http") ? movie.backdrop_path : `https://image.tmdb.org/t/p/original/${movie.backdrop_path}`) : "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=2069"}")`,
         backgroundPosition: "center center",
       }}
     >
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative pt-[35vh] md:pt-[250px] ml-[30px] md:ml-[60px] pb-20 z-10 max-w-[90%] md:max-w-[45%]">
-        <h1 className="text-4xl md:text-7xl font-black pb-6 drop-shadow-2xl leading-tight">
+      <div className="absolute inset-0 bg-black/30" />
+      <div className="relative pt-[40vh] md:pt-[320px] ml-[30px] md:ml-[60px] pb-20 z-10 max-w-[90%] md:max-w-[50%] flex flex-col justify-center h-full">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold pb-2 drop-shadow-2xl leading-[1.1]">
           {movie?.title || movie?.name || movie?.original_name}
         </h1>
 
@@ -46,7 +47,10 @@ function Banner() {
           <button className="flex items-center px-4 md:px-8 py-2 bg-white text-black font-extrabold rounded-sm hover:bg-[#e6e6e6] transition duration-300 transform active:scale-95">
             <Play className="w-5 h-5 mr-2 fill-current" /> Play
           </button>
-          <button className="flex items-center px-4 md:px-8 py-2 bg-[rgba(109,109,110,0.7)] text-white font-extrabold rounded-sm hover:bg-[rgba(109,109,110,0.4)] transition duration-300 transform active:scale-95">
+          <button 
+            onClick={() => onInfoClick && onInfoClick(movie)}
+            className="flex items-center px-4 md:px-8 py-2 bg-[rgba(109,109,110,0.7)] text-white font-extrabold rounded-sm hover:bg-[rgba(109,109,110,0.4)] transition duration-300 transform active:scale-95"
+          >
             <Info className="w-5 h-5 mr-2" /> More Info
           </button>
         </div>

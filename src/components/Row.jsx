@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "../api/axios";
-import { Plus, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Check, ChevronLeft, ChevronRight, Info, Play } from "lucide-react";
 import { useWatchlist } from "../context/WatchlistContext.jsx";
-import { motion } from "framer-motion";
 
 import { sampleMovies } from "../api/sampleData";
 
 const base_url = "https://image.tmdb.org/t/p/original/";
 
-function Row({ title, fetchUrl, isLargeRow, handleClick, initialMovies }) {
+function Row({ title, fetchUrl, isLargeRow, handleClick, initialMovies, onInfoClick }) {
   const [fetchedMovies, setFetchedMovies] = useState([]);
   const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const listRef = useRef(null);
@@ -43,9 +42,10 @@ function Row({ title, fetchUrl, isLargeRow, handleClick, initialMovies }) {
 
   const isInWatchlist = (id) => watchlist.some((m) => m.id === id);
 
-  const getImageUrl = (path) => {
-    if (!path) return "";
-    return path.startsWith("http") ? path : `${base_url}${path}`;
+  const getImageUrl = (path, fallbackPath) => {
+    const finalPath = path || fallbackPath;
+    if (!finalPath) return "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=2069";
+    return finalPath.startsWith("http") ? finalPath : `${base_url}${finalPath}`;
   };
 
   return (
@@ -76,24 +76,36 @@ function Row({ title, fetchUrl, isLargeRow, handleClick, initialMovies }) {
           className="row-posters hide-scrollbar flex space-x-3 overflow-x-scroll py-5"
         >
           {movies.map((movie) => (
-            <motion.div 
+            <div 
               key={movie.id} 
-              className="relative min-w-[160px] md:min-w-[240px] cursor-pointer"
-              whileHover={{ 
-                scale: 1.15,
-                zIndex: 50,
-                transition: { duration: 0.3 }
-              }}
+              className="relative min-w-[160px] md:min-w-[240px] cursor-pointer transition-transform duration-300 hover:scale-110 hover:z-50"
             >
               <img
-                onClick={() => handleClick(movie)}
+                onClick={() => onInfoClick && onInfoClick(movie)}
                 className={`w-full object-cover rounded-md shadow-md transition-shadow duration-300 hover:shadow-2xl ${isLargeRow ? "h-[250px] md:h-[400px]" : "h-[100px] md:h-[150px]"}`}
-                src={getImageUrl(isLargeRow ? movie.poster_path : movie.backdrop_path)}
+                src={getImageUrl(
+                  isLargeRow ? movie?.poster_path : movie?.backdrop_path,
+                  isLargeRow ? movie?.backdrop_path : movie?.poster_path
+                )}
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&q=80&w=2069";
+                }}
                 alt={movie.name || movie.title}
               />
               
               <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/90 to-transparent opacity-0 hover:opacity-100 transition-opacity rounded-b-md">
                 <div className="flex space-x-2 items-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClick && handleClick(movie);
+                    }}
+                    className="bg-white p-1 rounded-full hover:bg-gray-200 border border-white"
+                    title="Play"
+                  >
+                    <Play className="w-4 h-4 text-black fill-current" />
+                  </button>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -107,12 +119,22 @@ function Row({ title, fetchUrl, isLargeRow, handleClick, initialMovies }) {
                       <Plus className="w-4 h-4 text-white" />
                     )}
                   </button>
-                  <p className="text-[10px] font-bold line-clamp-1">
+                  <p className="text-[10px] font-bold line-clamp-1 flex-1">
                     {movie?.title || movie?.name}
                   </p>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onInfoClick && onInfoClick(movie);
+                    }}
+                    className="p-1 bg-white/20 rounded-full hover:bg-white/40 border border-white/50"
+                    title="More Info"
+                  >
+                    <Info className="w-4 h-4 text-white" />
+                  </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
